@@ -30,64 +30,13 @@ class View:
         st.header('🚥Inquiry System For Taiwan Traffic Data🚦')
         ############ loading the data
         with st.expander('Expand to peek the data and columns description.'):
-            st.markdown("#### First 5 rows of the dataset")
-            st.write(st.session_state.traffic_df.head())
-            st.markdown("""
-            #### Column descriptions:
-            |  Columns |  Descriptions |
-            |---|---|
-            | 'VehicleType' |  車種，31小客車、32小貨車、41大客車、42大貨車、5聯結車 |
-            | 'DerectionTime_O' |  車輛通過本旅次第1個測站時間 |
-            | 'GantryID_D' | 車輛通過本旅次第1個測站編號 |
-            | 'DerectionTime_D' |  車輛通過本旅次最後1個測站時間 |
-            | 'TripLength' | 本旅次行駛距離  |
-            | 'TripEnd' | 旅次標記(Y正常結束，N異常)  |
-            | 'TripInformation' |  本旅次經過各個測站之通過時間及編號 |
-            
-            """)
+            self._display_data_description()
         
         ############ search part
-        st.markdown("### SEARCH")
-        search_spaces1, search_spaces2 = st.columns([1, 1])
-
-        search_target = search_spaces1.selectbox(
-            "Search a record", st.session_state.traffic_df.columns)
-        is_search = search_spaces1.button("Search 🔍", )
-        if search_target in ['DerectionTime_O', 'DerectionTime_D']:
-            search_keyword = search_spaces2.text_input(
-                " ", placeholder="(YYYY-MM-DD HH:MM:SS)"
-            )
-        else:
-            search_keyword = search_spaces2.text_input(
-                "keyword", placeholder="Input your keyword"
-            )
-
-        if is_search:
-            with st.spinner(f'Searching: {search_keyword} ...'):
-                result = self.on_search(search_target, search_keyword)
-                st.session_state.search_result = result
-        if st.session_state.get('search_result') is not None:
-            st.subheader("Search results:")
-            self.display_results('search_result')
+        self._display_search()
 
         ############ sort part
-        st.markdown("### SORT")
-        sort_spaces1, sort_spaces2, sort_spaces3 = st.columns(3)
-
-        sort_target = sort_spaces1.selectbox(
-            "Sort a record", st.session_state.traffic_df.columns, key = "<aaa>")
-        sort_way = sort_spaces2.selectbox(
-            "Ascending order or not", ['ascending', 'descending'])
-        sort_display_num = sort_spaces3.text_input(
-            "Max. number of items", placeholder="default: 10")
-        is_sort = sort_spaces1.button("Sort 🔍")
-
-        if is_sort:
-            result = self.on_sort(sort_target, sort_way, sort_display_num)
-            st.session_state.sort_result = result
-        if st.session_state.get('sort_result') is not None:
-            st.subheader("Sort results:")
-            self.display_results('sort_result')
+        self._display_sort()
 
         return 
     
@@ -120,3 +69,63 @@ class View:
             st.warning(result)
         else:
             st.write(result)
+
+    def _display_data_description(self):
+        st.markdown("#### First 5 rows of the dataset")
+        st.write(st.session_state.traffic_df.head())
+        st.markdown("""
+        #### Column descriptions:
+        |  Columns |  Descriptions |
+        |---|---|
+        | 'VehicleType' |  車種，31小客車、32小貨車、41大客車、42大貨車、5聯結車 |
+        | 'DerectionTime_O' |  車輛通過本旅次第1個測站時間 |
+        | 'GantryID_D' | 車輛通過本旅次第1個測站編號 |
+        | 'DerectionTime_D' |  車輛通過本旅次最後1個測站時間 |
+        | 'TripLength' | 本旅次行駛距離  |
+        | 'TripEnd' | 旅次標記(Y正常結束，N異常)  |
+        | 'TripInformation' |  本旅次經過各個測站之通過時間及編號 |
+        
+        """)
+    
+    def _display_search(self):
+        st.markdown("### SEARCH")
+        search_spaces1, search_spaces2 = st.columns([1, 1])
+
+        search_target = search_spaces1.selectbox(
+            "Search a record", st.session_state.traffic_df.columns)
+        is_search = search_spaces1.button("Search 🔍", )
+        if search_target in ['DerectionTime_O', 'DerectionTime_D']:
+            search_keyword = search_spaces2.text_input(
+                " ", placeholder="(YYYY-MM-DD HH:MM:SS)"
+            )
+        else:
+            search_keyword = search_spaces2.text_input(
+                "keyword", placeholder="Input your keyword"
+            )
+
+        if is_search:
+            with st.spinner(f'Searching: {search_keyword} ...'):
+                result = self.on_search(search_target, search_keyword)
+                st.session_state.search_result = result
+        if st.session_state.get('search_result') is not None:
+            st.subheader("Search results:")
+            self.display_results('search_result')
+
+    def _display_sort(self):
+        st.markdown("### SORT")
+        sort_spaces1, sort_spaces2, sort_spaces3 = st.columns(3)
+
+        sort_target = sort_spaces1.selectbox(
+            "Sort a record", st.session_state.traffic_df.columns, key = "<aaa>")
+        sort_way = sort_spaces2.selectbox(
+            "Ascending order or not", ['ascending', 'descending'])
+        sort_display_num = sort_spaces3.text_input(
+            "Max. number of items", placeholder="default: 10")
+        is_sort = sort_spaces1.button("Sort 🔍")
+
+        if is_sort:
+            result = self.on_sort(sort_target, sort_way, sort_display_num)
+            st.session_state.sort_result = result
+        if st.session_state.get('sort_result') is not None:
+            st.subheader("Sort results:")
+            self.display_results('sort_result')
