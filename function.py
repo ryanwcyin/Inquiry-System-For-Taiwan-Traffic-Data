@@ -15,16 +15,17 @@ import pandas as pd
 
 # traffic_df = read_default_dataset()
 
-def search(df, column, keyword):
-    r = df[df[column].isin([keyword])]
-    if r.empty:
-        return df[df[column].str.contains(keyword)]
-    return r
+class DataHandler:
+    def search(self, df, column, keyword):
+        r = df[df[column].isin([keyword])]
+        if r.empty:
+            return df[df[column].astype(str).str.contains(keyword)]
+        return r
 
-def sort(df, column, way, num):
-    if way == 'ascending':
-        acd = True
-    elif way == 'non-ascending':
-        acd = False
-    return df.sort_values(by=[column], ascending=acd)[:num]
-# print(search(traffic_df, 'VehicleType', 31))
+    def sort(self, df, column, way, num):
+        if way == 'ascending':
+            acd = True
+        elif way == 'non-ascending':
+            acd = False
+        return df.sort_values(by=[column], ascending=acd)[:num]
+    # print(search(traffic_df, 'VehicleType', 31))
