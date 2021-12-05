@@ -9,7 +9,8 @@ class View:
         self.data_handler = TrafficDataHandler()
         # Get the data to state
         if 'traffic_df' not in st.session_state:
-            st.session_state.traffic_df = self.fetch_data()
+            with st.spinner(f'Fetching the dataset...'):
+                st.session_state.traffic_df = self.fetch_data()
         
     def capture_time(func):
         def wrapper(*args, **kwargs):
@@ -28,8 +29,22 @@ class View:
     def render(self):
         st.header('🚥Inquiry System For Taiwan Traffic Data🚦')
         ############ loading the data
-        with st.expander('Expand to preview the data.'):
+        with st.expander('Expand to peek the data and columns description.'):
+            st.markdown("#### First 5 rows of the dataset")
             st.write(st.session_state.traffic_df.head())
+            st.markdown("""
+            #### Column descriptions:
+            |  Columns |  Descriptions |
+            |---|---|
+            | 'VehicleType' |  車種，31小客車、32小貨車、41大客車、42大貨車、5聯結車 |
+            | 'DerectionTime_O' |  車輛通過本旅次第1個測站時間 |
+            | 'GantryID_D' | 車輛通過本旅次第1個測站編號 |
+            | 'DerectionTime_D' |  車輛通過本旅次最後1個測站時間 |
+            | 'TripLength' | 本旅次行駛距離  |
+            | 'TripEnd' | 旅次標記(Y正常結束，N異常)  |
+            | 'TripInformation' |  本旅次經過各個測站之通過時間及編號 |
+            
+            """)
         
         ############ search part
         st.markdown("### SEARCH")
@@ -48,8 +63,9 @@ class View:
             )
 
         if is_search:
-            result = self.on_search(search_target, search_keyword)
-            st.session_state.search_result = result
+            with st.spinner(f'Searching: {search_keyword} ...'):
+                result = self.on_search(search_target, search_keyword)
+                st.session_state.search_result = result
         if st.session_state.get('search_result') is not None:
             st.subheader("Search results:")
             self.display_results('search_result')
