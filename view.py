@@ -80,7 +80,19 @@ class View:
         is_sort = sort_spaces1.button("Sort 🔍")
 
         if is_sort:
-            self.on_sort(sort_target, sort_way, sort_display_num)
+            result = self.on_sort(sort_target, sort_way, sort_display_num)
+            st.session_state.sort_result = result
+        if st.session_state.get('sort_result') is not None:
+            st.subheader("Sort results:")
+            result = st.session_state.sort_result
+            if len(result) > 10 and not isinstance(result, str):
+                max_page=len(result)//10+1
+                part_to_show = st.slider('Pagination', min_value=1, max_value=max_page, format=f"Page %d of {len(result)}")
+                st.write(result.iloc[(part_to_show-1) * 10 : part_to_show * 10])
+            elif isinstance(result, str):
+                st.warning(result)
+            else:
+                st.write(result)
 
         return 
     
@@ -101,4 +113,4 @@ class View:
             num = sort_display_num
             num = int(num)
         result = self.data_handler.sort(st.session_state.traffic_df, sort_target, sort_way, num)
-        st.write(result)
+        return result
