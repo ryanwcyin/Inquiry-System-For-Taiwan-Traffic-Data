@@ -61,7 +61,7 @@ class View:
         sort_target = sort_spaces1.selectbox(
             "Sort a record", st.session_state.traffic_df.columns, key = "<aaa>")
         sort_way = sort_spaces2.selectbox(
-            "Ascending order or not", ['ascending', 'non-ascending'])
+            "Ascending order or not", ['ascending', 'descending'])
         sort_display_num = sort_spaces3.text_input(
             "Max. number of items", placeholder="default: 10")
         is_sort = sort_spaces1.button("Sort 🔍")
