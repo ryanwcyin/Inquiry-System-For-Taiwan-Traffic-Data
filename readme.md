@@ -1,11 +1,13 @@
 # Inquiry system for Taiwan traffic 🚦
 
-### Installation:
+### Quickstart:
+
+Install the dependancies
 ```
 pip install -r requirements.txt
 ```
 
-### Start local app:
+Start the local app:
 ```
 streamlit run app.py
 ```
@@ -22,10 +24,31 @@ streamlit run app.py
 | 'TripInformation' |  本旅次經過各個測站之通過時間及編號 |
 
 
+### Update info. 📓 
+
+- 04/12/2021
+1. add search part
+    user: 
+    - choose a column
+    - input a keyword
+
+    return:
+    - a dataframe contains the keyword
+
+2. add sort part
+    user:
+    - choose a column
+    - choose acsending or non-acsending
+    - input the maximum display number of items
+
+    return:
+    - a dataframe which has been sorted
+
+
 ### TODO ✅:
-- [ ] Search
-- [ ] Sort
-- [ ] Join
+- highlight the keywords
+- add range search
+- visualize sorting(searching) time
 
 
 ### Acknowledgement: 
