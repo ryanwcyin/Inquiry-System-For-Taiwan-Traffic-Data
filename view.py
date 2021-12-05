@@ -1,12 +1,12 @@
 import streamlit as st
 import os
-from function import DataHandler
+from function import TrafficDataHandler
 
 from traffic_data import TrafficData
 
 class View:
     def __init__(self) -> None:
-        self.data_handler = DataHandler()
+        self.data_handler = TrafficDataHandler()
 
     # default data path
     @st.cache
@@ -17,6 +17,8 @@ class View:
     def render(self):
         traffic_df = self.fetch_data()
         st.header('🚥Inquiry System For Taiwan Traffic Data🚦')
+        with st.expander('Expand to preview the data.'):
+            st.write(traffic_df.head())
         ############ search part
         st.markdown("### SEARCH")
 

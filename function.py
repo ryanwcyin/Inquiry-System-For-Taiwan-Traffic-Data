@@ -15,7 +15,7 @@ import pandas as pd
 
 # traffic_df = read_default_dataset()
 
-class DataHandler:
+class TrafficDataHandler:
     def search(self, df, column, keyword):
         r = df[df[column].isin([keyword])]
         if r.empty:
