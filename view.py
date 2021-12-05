@@ -50,7 +50,19 @@ class View:
             )
 
         if is_search:
-            self.on_search(search_target, search_keyword)
+            result = self.on_search(search_target, search_keyword)
+            st.session_state.search_result = result
+        if st.session_state.get('search_result') is not None:
+            st.subheader("Search results:")
+            result = st.session_state.search_result
+            if len(result) > 10 and not isinstance(result, str):
+                max_page=len(result)//10+1
+                part_to_show = st.slider('Pagination', min_value=1, max_value=max_page, format=f"Page %d of {len(result)}")
+                st.write(result.iloc[(part_to_show-1) * 10 : part_to_show * 10])
+            elif isinstance(result, str):
+                st.warning(result)
+            else:
+                st.write(result)
 
         ############ sort part
         st.markdown("### SORT")
@@ -74,18 +86,15 @@ class View:
     
     @capture_time
     def on_search(self, search_target, search_keyword):
-        st.subheader("📋 Search results:")
-        start_time = time.time()
         if search_keyword == '':
             result = 'please enter a keyword'
         else:
             # TODO: highlight the search results
             result = self.data_handler.search(st.session_state.traffic_df, search_target, search_keyword)
-        st.write(result)
+        return result
 
     @capture_time
     def on_sort(self, sort_target, sort_way, sort_display_num):
-        st.subheader("Sort results:")
         if sort_display_num == '':
             num = 10  # default is 10
         else:
