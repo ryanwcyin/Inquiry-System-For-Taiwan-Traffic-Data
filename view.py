@@ -11,7 +11,6 @@ class View:
         if 'traffic_df' not in st.session_state:
             st.session_state.traffic_df = self.fetch_data()
         
-    
     def capture_time(func):
         def wrapper(*args, **kwargs):
             start_time = time.time()
@@ -28,18 +27,17 @@ class View:
     
     def render(self):
         st.header('🚥Inquiry System For Taiwan Traffic Data🚦')
+        ############ loading the data
         with st.expander('Expand to preview the data.'):
             st.write(st.session_state.traffic_df.head())
+        
         ############ search part
         st.markdown("### SEARCH")
-
         search_spaces1, search_spaces2 = st.columns([1, 1])
 
         search_target = search_spaces1.selectbox(
             "Search a record", st.session_state.traffic_df.columns)
-
         is_search = search_spaces1.button("Search 🔍", )
-
         if search_target in ['DerectionTime_O', 'DerectionTime_D']:
             search_keyword = search_spaces2.text_input(
                 " ", placeholder="(YYYY-MM-DD HH:MM:SS)"
@@ -50,7 +48,11 @@ class View:
             )
 
         if is_search:
-            self.on_search(search_target, search_keyword)
+            result = self.on_search(search_target, search_keyword)
+            st.session_state.search_result = result
+        if st.session_state.get('search_result') is not None:
+            st.subheader("Search results:")
+            self.display_results('search_result')
 
         ############ sort part
         st.markdown("### SORT")
@@ -58,38 +60,47 @@ class View:
 
         sort_target = sort_spaces1.selectbox(
             "Sort a record", st.session_state.traffic_df.columns, key = "<aaa>")
-
         sort_way = sort_spaces2.selectbox(
-            "Ascending order or not", ['ascending', 'non-ascending'])
-
+            "Ascending order or not", ['ascending', 'descending'])
         sort_display_num = sort_spaces3.text_input(
             "Max. number of items", placeholder="default: 10")
-
         is_sort = sort_spaces1.button("Sort 🔍")
 
         if is_sort:
-            self.on_sort(sort_target, sort_way, sort_display_num)
+            result = self.on_sort(sort_target, sort_way, sort_display_num)
+            st.session_state.sort_result = result
+        if st.session_state.get('sort_result') is not None:
+            st.subheader("Sort results:")
+            self.display_results('sort_result')
 
         return 
     
     @capture_time
     def on_search(self, search_target, search_keyword):
-        st.subheader("📋 Search results:")
-        start_time = time.time()
         if search_keyword == '':
             result = 'please enter a keyword'
         else:
             # TODO: highlight the search results
             result = self.data_handler.search(st.session_state.traffic_df, search_target, search_keyword)
-        st.write(result)
+        return result
 
     @capture_time
     def on_sort(self, sort_target, sort_way, sort_display_num):
-        st.subheader("Sort results:")
         if sort_display_num == '':
             num = 10  # default is 10
         else:
             num = sort_display_num
             num = int(num)
         result = self.data_handler.sort(st.session_state.traffic_df, sort_target, sort_way, num)
-        st.write(result)
+        return result
+
+    def display_results(self, name_of_result):
+        result = st.session_state[name_of_result]
+        if len(result) > 10 and not isinstance(result, str):
+            max_page=len(result)//10+1
+            part_to_show = st.slider('Pagination', min_value=1, max_value=max_page, format=f"Page %i of {max_page}")
+            st.write(result.iloc[(part_to_show-1) * 10 : part_to_show * 10])
+        elif isinstance(result, str):
+            st.warning(result)
+        else:
+            st.write(result)
