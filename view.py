@@ -93,7 +93,7 @@ class View:
 
         search_target = search_spaces1.selectbox(
             "Search a record", st.session_state.traffic_df.columns)
-        is_search = search_spaces1.button("Search 🔍", )
+        is_search = st.button("Search 🔍", )
         if search_target in ['DerectionTime_O', 'DerectionTime_D']:
             search_keyword = search_spaces2.text_input(
                 " ", placeholder="(YYYY-MM-DD HH:MM:SS)"
@@ -121,7 +121,7 @@ class View:
             "Ascending order or not", ['ascending', 'descending'])
         sort_display_num = sort_spaces3.text_input(
             "Max. number of items", placeholder="default: 10")
-        is_sort = sort_spaces1.button("Sort 🔍")
+        is_sort = st.button("Sort 🔍")
 
         if is_sort:
             result = self.on_sort(sort_target, sort_way, sort_display_num)
